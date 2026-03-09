@@ -20,6 +20,7 @@ help:
 	@echo "  make test          - Run ClerkKitTests on macOS"
 	@echo "  make test-ui       - Run ClerkKitUI tests on iOS Simulator"
 	@echo "  make test-integration - Run only integration tests"
+	@echo "  make smoke-macos   - Build the Swift package and MacExampleApp on macOS"
 	@echo "  make install-tools - Install pinned SwiftFormat and SwiftLint"
 	@echo "  make update-swiftformat - Update pinned SwiftFormat to the latest release"
 	@echo "  make update-swiftlint - Update pinned SwiftLint to the latest release"
