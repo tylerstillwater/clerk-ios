@@ -3,7 +3,7 @@
 //  Clerk
 //
 
-#if os(iOS)
+#if os(iOS) || os(macOS)
 
 import SwiftUI
 
@@ -15,11 +15,15 @@ struct DismissButton: View {
   var action: (() -> Void)?
 
   var secondaryPaletteStyle: AnyShapeStyle {
+    #if os(iOS)
     if #available(iOS 26.0, *) {
       AnyShapeStyle(Color.clear)
     } else {
       AnyShapeStyle(Material.ultraThinMaterial)
     }
+    #else
+    AnyShapeStyle(Material.ultraThinMaterial)
+    #endif
   }
 
   var body: some View {

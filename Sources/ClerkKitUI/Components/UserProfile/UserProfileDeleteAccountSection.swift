@@ -3,7 +3,7 @@
 //  Clerk
 //
 
-#if os(iOS)
+#if os(iOS) || os(macOS)
 
 import ClerkKit
 import SwiftUI
@@ -30,6 +30,7 @@ struct UserProfileDeleteAccountSection: View {
 
 #Preview {
   UserProfileDeleteAccountSection()
+    .clerkPreview()
 }
 
 #endif

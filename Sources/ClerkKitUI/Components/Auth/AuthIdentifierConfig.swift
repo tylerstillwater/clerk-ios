@@ -3,7 +3,7 @@
 //  Clerk
 //
 
-#if os(iOS)
+#if os(iOS) || os(macOS)
 
 /// Configuration for identifier pre-filling and persistence on ``AuthView``.
 struct AuthIdentifierConfig: Equatable {

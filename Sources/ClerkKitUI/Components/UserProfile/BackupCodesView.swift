@@ -3,7 +3,7 @@
 //  Clerk
 //
 
-#if os(iOS)
+#if os(iOS) || os(macOS)
 
 import ClerkKit
 import SwiftUI
@@ -54,33 +54,57 @@ struct BackupCodesView: View {
       }
       .padding(24)
     }
+    #if os(macOS)
+    .frame(minWidth: 460, maxWidth: 620)
+    #endif
     .presentationBackground(theme.colors.background)
     .background(theme.colors.background)
-    .navigationBarTitleDisplayMode(.inline)
-    .navigationBarBackButtonHidden()
-    .preGlassSolidNavBar()
-    .toolbar {
-      ToolbarItem(placement: .topBarTrailing) {
-        Button {
-          switch mfaType {
-          case .phoneCode, .authenticatorApp:
-            navigation.presentedAddMfaType = nil
-          case .backupCodes:
-            dismiss()
+    #if os(iOS)
+      .navigationBarTitleDisplayMode(.inline)
+      .navigationBarBackButtonHidden()
+    #endif
+      .preGlassSolidNavBar()
+      .toolbar {
+        #if os(iOS)
+        ToolbarItem(placement: .topBarTrailing) {
+          Button {
+            done()
+          } label: {
+            Text("Done", bundle: .module)
+              .font(theme.fonts.body)
+              .fontWeight(.semibold)
+              .foregroundStyle(theme.colors.primary)
           }
-        } label: {
-          Text("Done", bundle: .module)
-            .font(theme.fonts.body)
-            .fontWeight(.semibold)
-            .foregroundStyle(theme.colors.primary)
+        }
+        #elseif os(macOS)
+        ToolbarItem {
+          Button {
+            done()
+          } label: {
+            Text("Done", bundle: .module)
+              .font(theme.fonts.body)
+              .fontWeight(.semibold)
+              .foregroundStyle(theme.colors.primary)
+          }
+        }
+        #endif
+
+        ToolbarItem(placement: .principal) {
+          Text("Backup codes", bundle: .module)
+            .font(theme.fonts.headline)
+            .foregroundStyle(theme.colors.foreground)
         }
       }
+  }
+}
 
-      ToolbarItem(placement: .principal) {
-        Text("Backup codes", bundle: .module)
-          .font(theme.fonts.headline)
-          .foregroundStyle(theme.colors.foreground)
-      }
+extension BackupCodesView {
+  private func done() {
+    switch mfaType {
+    case .phoneCode, .authenticatorApp:
+      navigation.presentedAddMfaType = nil
+    case .backupCodes:
+      dismiss()
     }
   }
 }
@@ -132,6 +156,7 @@ struct BackupCodesGrid: View {
     backupCodes: ["abc", "def", "ghi", "jkl", "lmn", "opq", "rst", "uvw", "xyz"],
     mfaType: .authenticatorApp
   )
+  .clerkPreview()
   .environment(UserProfileSheetNavigation())
 }
 
