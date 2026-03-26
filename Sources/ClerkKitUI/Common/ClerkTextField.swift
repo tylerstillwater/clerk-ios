@@ -3,7 +3,7 @@
 //  Clerk
 //
 
-#if os(iOS)
+#if os(iOS) || os(macOS)
 
 import SwiftUI
 
@@ -33,6 +33,18 @@ struct ClerkTextField: View {
     fieldState: FieldState = .default
   ) {
     self.titleKey = titleKey
+    _text = text
+    self.isSecure = isSecure
+    self.fieldState = fieldState
+  }
+
+  init(
+    _ title: String,
+    text: Binding<String>,
+    isSecure: Bool = false,
+    fieldState: FieldState = .default
+  ) {
+    titleKey = LocalizedStringKey(title)
     _text = text
     self.isSecure = isSecure
     self.fieldState = fieldState
