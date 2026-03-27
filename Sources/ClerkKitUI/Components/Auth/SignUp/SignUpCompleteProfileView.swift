@@ -3,7 +3,7 @@
 //  Clerk
 //
 
-#if os(iOS)
+#if os(iOS) || os(macOS)
 
 import ClerkKit
 import SwiftUI
@@ -114,7 +114,9 @@ struct SignUpCompleteProfileView: View {
       }
       .padding(16)
     }
+    #if os(iOS)
     .scrollDismissesKeyboard(.interactively)
+    #endif
     .clerkErrorPresenting($error)
     .sheet(item: $safariSheetItem) { item in
       SafariView(url: item.url)
@@ -127,7 +129,9 @@ struct SignUpCompleteProfileView: View {
           .foregroundStyle(theme.colors.foreground)
       }
     }
+    #if os(iOS)
     .navigationBarTitleDisplayMode(.inline)
+    #endif
     .onFirstAppear {
       focused = firstEmptyMissingField() ?? firstMissingField()
     }

@@ -69,9 +69,7 @@ struct SignInSetNewPasswordView: View {
           #endif
             .autocorrectionDisabled()
             .focused($focusedField, equals: .new)
-          #if os(iOS)
             .hiddenTextField(text: $identifier, textContentType: .username)
-          #endif
             .onFirstAppear {
               focusedField = .new
 

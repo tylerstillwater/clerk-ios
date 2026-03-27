@@ -3,7 +3,7 @@
 //  Clerk
 //
 
-#if os(iOS)
+#if os(iOS) || os(macOS)
 
 import ClerkKit
 import SwiftUI
@@ -124,22 +124,38 @@ public struct AuthView: View {
       AuthStartView()
         .toolbar {
           if showDismissButton {
+            #if os(iOS)
             ToolbarItem(placement: .topBarTrailing) {
               DismissButton {
                 dismiss()
               }
             }
+            #else
+            ToolbarItem {
+              DismissButton {
+                dismiss()
+              }
+            }
+            #endif
           }
         }
         .navigationDestination(for: Destination.self) {
           $0.view
             .toolbar {
               if showDismissButton {
+                #if os(iOS)
                 ToolbarItem(placement: .topBarTrailing) {
                   DismissButton {
                     dismiss()
                   }
                 }
+                #else
+                ToolbarItem {
+                  DismissButton {
+                    dismiss()
+                  }
+                }
+                #endif
               }
             }
             .environment(navigation)
@@ -149,7 +165,9 @@ public struct AuthView: View {
     }
     .background(theme.colors.background)
     .presentationBackground(theme.colors.background)
+    #if os(iOS)
     .interactiveDismissDisabled(navigation.hasSessionTaskStartInPath && clerk.session?.status != .active)
+    #endif
     .tint(theme.colors.primary)
     .environment(navigation)
     .environment(authState)
@@ -171,42 +189,39 @@ public struct AuthView: View {
           if becameActive, isDismissable, !isHandlingSessionTask || sessionSwitched {
             dismiss()
           }
-        default:
-          break
         }
       }
-    }
-    .onChange(of: navigation.allTasksComplete) { _, isComplete in
-      guard isComplete else { return }
-      if isDismissable {
-        dismiss()
+      .onChange(of: navigation.allTasksComplete) { _, isComplete in
+        guard isComplete else { return }
+        if isDismissable {
+          dismiss()
+        }
       }
-    }
-    .onChange(of: clerk.session?.tasks) { _, _ in
-      navigation.routeToSessionTaskStartIfNeeded(session: clerk.session)
-    }
-    .onChange(of: clerk.user) { _, newUser in
-      guard newUser == nil, navigation.hasSessionTaskStartInPath else { return }
-      if isDismissable {
-        dismiss()
-      } else {
-        navigation.path = []
+      .onChange(of: clerk.session?.tasks) { _, _ in
+        navigation.routeToSessionTaskStartIfNeeded(session: clerk.session)
       }
-    }
-    .onChange(of: config, initial: true) { _, newConfig in
-      authState.configure(newConfig)
-    }
-    .taskOnce {
-      await clerk.telemetry.record(
-        TelemetryEvents.viewDidAppear(
-          "AuthView",
-          payload: [
-            "mode": .string(authState.mode.rawValue),
-            "isDismissable": .bool(isDismissable),
-          ]
+      .onChange(of: clerk.user) { _, newUser in
+        guard newUser == nil, navigation.hasSessionTaskStartInPath else { return }
+        if isDismissable {
+          dismiss()
+        } else {
+          navigation.path = []
+        }
+      }
+      .onChange(of: config, initial: true) { _, newConfig in
+        authState.configure(newConfig)
+      }
+      .taskOnce {
+        await clerk.telemetry.record(
+          TelemetryEvents.viewDidAppear(
+            "AuthView",
+            payload: [
+              "mode": .string(authState.mode.rawValue),
+              "isDismissable": .bool(isDismissable),
+            ]
+          )
         )
-      )
-    }
+      }
   }
 }
 

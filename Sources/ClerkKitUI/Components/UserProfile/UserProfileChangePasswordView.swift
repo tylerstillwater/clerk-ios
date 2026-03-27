@@ -119,9 +119,7 @@ struct UserProfileChangePasswordView: View {
           ClerkTextField("New password", text: $newPassword, isSecure: true)
             .textContentType(.newPassword)
             .focused($focusedField, equals: .newPassword)
-          #if os(iOS)
             .hiddenTextField(text: .constant(user?.usernameForPasswordKeeper ?? ""), textContentType: .username)
-          #endif
 
           ClerkTextField("Confirm password", text: $confirmNewPassword, isSecure: true)
             .textContentType(.newPassword)
