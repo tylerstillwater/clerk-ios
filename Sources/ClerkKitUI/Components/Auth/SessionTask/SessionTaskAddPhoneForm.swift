@@ -2,7 +2,7 @@
 //  SessionTaskAddPhoneForm.swift
 //
 
-#if os(iOS)
+#if os(iOS) || os(macOS)
 
 import ClerkKit
 import SwiftUI
@@ -36,7 +36,9 @@ struct SessionTaskAddPhoneForm: View {
         VStack(spacing: 4) {
           ClerkPhoneNumberField("Enter your phone number", text: $phoneNumber)
             .textContentType(.telephoneNumber)
+          #if os(iOS)
             .keyboardType(.numberPad)
+          #endif
             .focused($isFocused)
             .onFirstAppear {
               isFocused = true

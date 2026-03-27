@@ -3,7 +3,7 @@
 //  Clerk
 //
 
-#if os(iOS)
+#if os(iOS) || os(macOS)
 
 import ClerkKit
 import SwiftUI
@@ -64,16 +64,20 @@ struct SignInSetNewPasswordView: View {
             fieldState: fieldError != nil ? .error : .default
           )
           .textContentType(.newPassword)
-          .textInputAutocapitalization(.never)
-          .autocorrectionDisabled()
-          .focused($focusedField, equals: .new)
-          .hiddenTextField(text: $identifier, textContentType: .username)
-          .onFirstAppear {
-            focusedField = .new
+          #if os(iOS)
+            .textInputAutocapitalization(.never)
+          #endif
+            .autocorrectionDisabled()
+            .focused($focusedField, equals: .new)
+          #if os(iOS)
+            .hiddenTextField(text: $identifier, textContentType: .username)
+          #endif
+            .onFirstAppear {
+              focusedField = .new
 
-            // Keep a local copy because sign-in identifier can be cleared after reset completion.
-            identifier = initialIdentifier
-          }
+              // Keep a local copy because sign-in identifier can be cleared after reset completion.
+              identifier = initialIdentifier
+            }
 
           VStack(spacing: 8) {
             ClerkTextField(
@@ -83,9 +87,11 @@ struct SignInSetNewPasswordView: View {
               fieldState: fieldError != nil ? .error : .default
             )
             .textContentType(.newPassword)
-            .textInputAutocapitalization(.never)
-            .autocorrectionDisabled()
-            .focused($focusedField, equals: .confirm)
+            #if os(iOS)
+              .textInputAutocapitalization(.never)
+            #endif
+              .autocorrectionDisabled()
+              .focused($focusedField, equals: .confirm)
 
             if let fieldError {
               ErrorText(error: fieldError, alignment: .leading)

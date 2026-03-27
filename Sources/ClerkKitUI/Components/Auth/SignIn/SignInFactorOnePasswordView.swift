@@ -3,7 +3,7 @@
 //  Clerk
 //
 
-#if os(iOS)
+#if os(iOS) || os(macOS)
 
 import ClerkKit
 import SwiftUI
@@ -53,11 +53,13 @@ struct SignInFactorOnePasswordView: View {
               fieldState: fieldError != nil ? .error : .default
             )
             .textContentType(.password)
-            .textInputAutocapitalization(.never)
-            .focused($isFocused)
-            .onFirstAppear {
-              isFocused = true
-            }
+            #if os(iOS)
+              .textInputAutocapitalization(.never)
+            #endif
+              .focused($isFocused)
+              .onFirstAppear {
+                isFocused = true
+              }
 
             if let fieldError {
               ErrorText(error: fieldError, alignment: .leading)
