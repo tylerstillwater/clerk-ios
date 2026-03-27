@@ -48,6 +48,8 @@ struct OTPField: View {
         .textContentType(.oneTimeCode)
       #if os(iOS)
         .keyboardType(.numberPad)
+      #elseif os(macOS)
+        .textFieldStyle(.plain)
       #endif
         .foregroundStyle(.clear)
         .tint(.clear)

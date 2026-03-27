@@ -334,7 +334,9 @@ public struct UserProfileView<Route: Hashable, Destination: View>: View {
               #endif
             }()
           ) {
-            DismissButton()
+            DismissButton {
+              dismiss()
+            }
           }
         }
       }
