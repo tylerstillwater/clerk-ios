@@ -25,10 +25,6 @@ struct UserProfileExternalAccountRow: View {
 
   let externalAccount: ExternalAccount
 
-  private var displayedError: Error? {
-    externalAccount.verification?.error ?? error
-  }
-
   var body: some View {
     HStack(spacing: 16) {
       VStack(alignment: .leading, spacing: 4) {
@@ -69,16 +65,12 @@ struct UserProfileExternalAccountRow: View {
             .frame(minHeight: 22)
         }
 
-        #if os(iOS)
         if let error = externalAccount.verification?.error {
           ErrorText(error: error, alignment: .leading)
-        }
-        #elseif os(macOS)
-        if let displayedError {
-          ErrorText(error: displayedError, alignment: .leading)
+          #if os(macOS)
             .fixedSize(horizontal: false, vertical: true)
+          #endif
         }
-        #endif
       }
 
       Spacer()
@@ -185,9 +177,7 @@ extension UserProfileExternalAccountRow {
       _ = try? await clerk.refreshClient()
       #endif
     } catch {
-      #if os(macOS)
       if error.isUserCancelledError { return }
-      #endif
       self.error = error
       ClerkLogger.error("Failed to reconnect external account", error: error)
     }
