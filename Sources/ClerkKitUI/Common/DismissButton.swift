@@ -11,20 +11,21 @@ struct DismissButton: View {
   @Environment(\.dismiss) private var dismiss
   @Environment(\.clerkTheme) private var theme
   @Environment(\.colorScheme) private var colorScheme
+  private let action: (() -> Void)?
 
-  var action: (() -> Void)?
+  init(action: (() -> Void)? = nil) {
+    self.action = action
+  }
 
+  #if os(iOS)
   var secondaryPaletteStyle: AnyShapeStyle {
-    #if os(iOS)
     if #available(iOS 26.0, *) {
       AnyShapeStyle(Color.clear)
     } else {
       AnyShapeStyle(Material.ultraThinMaterial)
     }
-    #else
-    AnyShapeStyle(Material.ultraThinMaterial)
-    #endif
   }
+  #endif
 
   var body: some View {
     Button {
@@ -34,6 +35,7 @@ struct DismissButton: View {
         dismiss()
       }
     } label: {
+      #if os(iOS)
       Image(systemName: "xmark.circle.fill")
         .resizable()
         .scaledToFit()
@@ -41,6 +43,10 @@ struct DismissButton: View {
         .foregroundStyle(theme.colors.mutedForeground, secondaryPaletteStyle)
         .frame(width: 30, height: 30)
         .brightness(colorScheme == .light ? -0.05 : 0.05)
+      #elseif os(macOS)
+      Text("Close", bundle: .module)
+        .foregroundStyle(theme.colors.primary)
+      #endif
     }
   }
 }

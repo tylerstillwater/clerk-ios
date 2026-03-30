@@ -123,40 +123,12 @@ public struct AuthView: View {
     NavigationStack(path: $navigation.path) {
       AuthStartView()
         .toolbar {
-          if showDismissButton {
-            #if os(iOS)
-            ToolbarItem(placement: .topBarTrailing) {
-              DismissButton {
-                dismiss()
-              }
-            }
-            #else
-            ToolbarItem {
-              DismissButton {
-                dismiss()
-              }
-            }
-            #endif
-          }
+          dismissToolbarItem
         }
         .navigationDestination(for: Destination.self) {
           $0.view
             .toolbar {
-              if showDismissButton {
-                #if os(iOS)
-                ToolbarItem(placement: .topBarTrailing) {
-                  DismissButton {
-                    dismiss()
-                  }
-                }
-                #else
-                ToolbarItem {
-                  DismissButton {
-                    dismiss()
-                  }
-                }
-                #endif
-              }
+              dismissToolbarItem
             }
             .environment(navigation)
             .environment(authState)
@@ -229,6 +201,15 @@ extension AuthView {
   /// Whether the dismiss button should be shown, accounting for required session tasks.
   private var showDismissButton: Bool {
     isDismissable && !navigation.hasSessionTaskStartInPath
+  }
+
+  @ToolbarContentBuilder
+  private var dismissToolbarItem: some ToolbarContent {
+    if showDismissButton {
+      DismissToolbarItem {
+        dismiss()
+      }
+    }
   }
 }
 
