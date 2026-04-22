@@ -138,28 +138,31 @@ public struct AuthView: View {
     .background(theme.colors.background)
     .presentationBackground(theme.colors.background)
     #if os(iOS)
-    .interactiveDismissDisabled(navigation.hasSessionTaskStartInPath && clerk.session?.status != .active)
+      .interactiveDismissDisabled(navigation.hasSessionTaskStartInPath && clerk.session?.status != .active)
     #endif
-    .tint(theme.colors.primary)
-    .environment(navigation)
-    .environment(authState)
-    .environment(codeLimiter)
-    .onAppear {
-      navigation.routeToSessionTaskStartIfNeeded(session: clerk.session)
-    }
-    .task {
-      _ = try? await clerk.refreshEnvironment()
-    }
-    .task {
-      for await event in clerk.auth.events {
-        switch event {
-        case .sessionChanged(let oldValue, let newValue):
-          guard !navigation.routeToSessionTaskStartIfNeeded(session: newValue) else { break }
-          let becameActive = newValue?.status == .active && (oldValue?.status != .active || oldValue?.id != newValue?.id)
-          let isHandlingSessionTask = navigation.hasSessionTaskStartInPath
-          let sessionSwitched = oldValue?.id != newValue?.id
-          if becameActive, isDismissable, !isHandlingSessionTask || sessionSwitched {
-            dismiss()
+      .tint(theme.colors.primary)
+      .environment(navigation)
+      .environment(authState)
+      .environment(codeLimiter)
+      .onAppear {
+        navigation.routeToSessionTaskStartIfNeeded(session: clerk.session)
+      }
+      .task {
+        _ = try? await clerk.refreshEnvironment()
+      }
+      .task {
+        for await event in clerk.auth.events {
+          switch event {
+          case .sessionChanged(let oldValue, let newValue):
+            guard !navigation.routeToSessionTaskStartIfNeeded(session: newValue) else { break }
+            let becameActive = newValue?.status == .active && (oldValue?.status != .active || oldValue?.id != newValue?.id)
+            let isHandlingSessionTask = navigation.hasSessionTaskStartInPath
+            let sessionSwitched = oldValue?.id != newValue?.id
+            if becameActive, isDismissable, !isHandlingSessionTask || sessionSwitched {
+              dismiss()
+            }
+          default:
+            break
           }
         }
       }

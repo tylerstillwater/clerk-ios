@@ -2,12 +2,16 @@
 //  OrganizationProfileFormView.swift
 //
 
-#if os(iOS)
+#if os(iOS) || os(macOS)
 
 import ClerkKit
 import NukeUI
 import PhotosUI
 import SwiftUI
+
+#if os(macOS)
+import AppKit
+#endif
 
 struct OrganizationProfileFormView: View {
   @Environment(Clerk.self) private var clerk
@@ -161,7 +165,9 @@ extension OrganizationProfileFormView {
               text: $slug,
               fieldState: slugValidationError == nil ? .default : .error
             )
+            #if os(iOS)
             .textInputAutocapitalization(.never)
+            #endif
             .autocorrectionDisabled()
 
             if let slugValidationError {
@@ -257,10 +263,24 @@ extension OrganizationProfileFormView {
 
   @ViewBuilder
   private var logoContent: some View {
-    if let selectedImageData, let uiImage = UIImage(data: selectedImageData) {
-      Image(uiImage: uiImage)
-        .resizable()
-        .scaledToFill()
+    if let selectedImageData {
+      #if os(iOS)
+      if let image = UIImage(data: selectedImageData) {
+        Image(uiImage: image)
+          .resizable()
+          .scaledToFill()
+      } else {
+        logoPlaceholder
+      }
+      #elseif os(macOS)
+      if let image = NSImage(data: selectedImageData) {
+        Image(nsImage: image)
+          .resizable()
+          .scaledToFill()
+      } else {
+        logoPlaceholder
+      }
+      #endif
     } else if let remoteLogoUrl {
       LazyImage(url: remoteLogoUrl) { state in
         if let image = state.image {
@@ -485,9 +505,15 @@ extension OrganizationProfileFormView {
   }
 
   private func processImageData(_ data: Data) -> Data? {
-    UIImage(data: data)?
+    #if os(iOS)
+    return UIImage(data: data)?
       .resizedMaintainingAspectRatio(to: .init(width: 200, height: 200))
       .jpegData(compressionQuality: 0.8)
+    #elseif os(macOS)
+    return NSImage(data: data)?
+      .resizedMaintainingAspectRatio(to: .init(width: 200, height: 200))
+      .jpegData(compressionQuality: 0.8)
+    #endif
   }
 
   private func createSlug(from name: String) -> String {
