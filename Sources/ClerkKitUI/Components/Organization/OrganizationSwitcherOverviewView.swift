@@ -2,7 +2,7 @@
 //  OrganizationSwitcherOverviewView.swift
 //
 
-#if os(iOS)
+#if os(iOS) || os(macOS)
 
 import ClerkKit
 import SwiftUI
@@ -45,11 +45,13 @@ struct OrganizationSwitcherOverviewView: View {
             .padding(.vertical, 16)
             .frame(maxWidth: .infinity)
         }
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
+        #endif
         .preGlassSolidNavBar()
         .preGlassDetentSheetBackground()
         .toolbar {
-          ToolbarItem(placement: .topBarTrailing) {
+          ToolbarItem(placement: doneToolbarPlacement) {
             Button {
               dismiss()
             } label: {
@@ -66,6 +68,7 @@ struct OrganizationSwitcherOverviewView: View {
               .foregroundStyle(theme.colors.foreground)
           }
         }
+        #if os(iOS)
         .onGeometryChange(
           for: CGFloat.self,
           of: { proxy in
@@ -75,10 +78,23 @@ struct OrganizationSwitcherOverviewView: View {
             contentHeight = newValue + UITabBarController().tabBar.frame.size.height
           }
         )
+        #endif
       }
       .scrollBounceBehavior(.basedOnSize)
     }
+    #if os(iOS)
     .presentationDetents([.height(contentHeight)])
+    #elseif os(macOS)
+    .frame(minWidth: 420, maxWidth: 520)
+    #endif
+  }
+
+  private var doneToolbarPlacement: ToolbarItemPlacement {
+    #if os(iOS)
+    .topBarTrailing
+    #elseif os(macOS)
+    .confirmationAction
+    #endif
   }
 
   private var organizationRow: some View {
